@@ -54,9 +54,13 @@ export default function(
         context.status = 200;
         return;
       } else if (!skipPath && context.method === 'GET') {
-        const filePath = context.path.substring(pathRoot.length);
-        await send(context, filePath, { root: SWAGGER_UI_PATH });
-        return;
+        try {
+          const filePath = context.path.substring(pathRoot.length);
+          await send(context, filePath, { root: SWAGGER_UI_PATH });
+          return;
+        } catch(err) {
+          err.status === 404 ? context.throw(404) : context.throw(err)
+        }
       }
     }
     return next();
